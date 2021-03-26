@@ -1,0 +1,5 @@
+For computing the heuristic, I wrote a mini helper function in graph_search.py. Also, to help keep track of my priority
+queue and closed list, I incorporated the custom Node class from lecture. I also incorporated the use of a built-in Python
+dictionary so that I could better keep track of my nodes. The custom world I built does not show a tracing of the path-
+planning problem solved as I gathered data across multiple resolutions for both A-star and Dijsktra, and it was more
+important to show data across those parameters.
