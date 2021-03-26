@@ -1,0 +1,19 @@
+# Position gains (x, y, z)
+        self.kp_pos = np.array([0, 0, 21])
+        self.kd_pos = np.array([0, 0, 5.1])
+
+        # Attitude gains (x, y, Yaw)
+        self.kp_att = np.array([0, 0, 1000])
+        self.kd_att = np.array([0, 0, 100])
+
+
+
+NEW
+
+# Position gains (x, y, z)
+        self.kp_pos = np.array([0, 0, 70])
+        self.kd_pos = np.array([0, 0, 25])
+
+        # Attitude gains (x, y, z)
+        self.kp_att = np.array([0, 0, 2000])
+        self.kd_att = np.array([0, 0, 100])

@@ -1,0 +1,7 @@
+ # Position gains (x, y, z)
+        self.kp_pos = np.array([0, 0, 1])
+        self.kd_pos = np.array([0, 0, 0])
+
+        # Attitude gains (x, y, z)
+        self.kp_att = np.array([0, 0, 0])
+        self.kd_att = np.array([0, 0, 0])
