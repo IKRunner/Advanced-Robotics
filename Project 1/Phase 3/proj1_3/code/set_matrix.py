@@ -186,16 +186,33 @@ def set_matrix(n_coeff, n_seg, n, time):
         x_fderiv = lambdify(x, x_deriv, 'numpy')
         y_fderiv = lambdify(y, y_deriv, 'numpy')
         z_fderiv = lambdify(z, z_deriv, 'numpy')
+        print(x_fderiv.__doc__)
+
+
+        #################
+        # t = Symbol('t')
+        # exp = (3 * t ** 3, 2 * t ** 2, 1 * t, 1.0, 0)
+        # f = lambdify(t, exp)
+        # print(f.__doc__)
+
+        ##################
 
         # Access relevant elements
-        x_curr_deriv = np.stack(np.array(x_fderiv(time[0:-1, 0]))[:-1-1]).T
-        y_curr_deriv = np.stack(np.array(y_fderiv(time[0:-1, 0]))[:-1 - 1]).T
-        z_curr_deriv = np.stack(np.array(z_fderiv(time[0:-1, 0]))[:-1 - 1]).T
+        result = np.array(x_fderiv(time[0:-1, 0]), dtype=object)
+        x_curr_deriv = np.stack(np.array(x_fderiv(time[0:-1, 0]), dtype=object)[:-1 - 1 - i]).T
+        y_curr_deriv = np.stack(np.array(y_fderiv(time[0:-1, 0]), dtype=object)[:-1 - 1 - i]).T
+        z_curr_deriv = np.stack(np.array(z_fderiv(time[0:-1, 0]), dtype=object)[:-1 - 1 - i]).T
+
+        # Add back constants
+        x_curr_deriv = np.hstack((x_curr_deriv, np.repeat(-terms[i], n_seg - 1)[...,None]))
+
+        # Add (i+0) zeros in columns
+        x_curr_deriv = np.hstack((x_curr_deriv, np.zeros((n_seg - 1, i + 1))))
 
         # Store current derivative
-        x_pos_deriv[i, :] = np.hstack((x_curr_deriv, np.hstack((np.ones(((n_seg - 1), 1)),np.zeros(((n_seg - 1), 1)))))).ravel()
-        y_pos_deriv[i, :] = np.hstack((y_curr_deriv, np.hstack((np.ones(((n_seg - 1), 1)),np.zeros(((n_seg - 1), 1)))))).ravel()
-        z_pos_deriv[i, :] = np.hstack((z_curr_deriv, np.hstack((np.ones(((n_seg - 1), 1)),np.zeros(((n_seg - 1), 1)))))).ravel()
+        x_pos_deriv[i, :] = x_curr_deriv.ravel()
+        # y_pos_deriv[i, :] = np.hstack((y_curr_deriv, np.hstack((np.ones(((n_seg - 1), 1)),np.zeros(((n_seg - 1), 1)))))).ravel()
+        # z_pos_deriv[i, :] = np.hstack((z_curr_deriv, np.hstack((np.ones(((n_seg - 1), 1)),np.zeros(((n_seg - 1), 1)))))).ravel()
 
         # Subsequent derivatives
         # Compute subsequent derivatives
