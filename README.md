@@ -1,14 +1,14 @@
 # Advanced-Robotics-MEAM620
 Repository for for Advanced Robotics (MEAM 620, Spring 2020 Upenn)
 
-As a part of the MEAM 620 Advanced Robotics Course, Python code for the following was written:
-- TODO I
-- TODO II
+As a part of the MEAM 620 Advanced Robotics Course, Python code for the following projects was written:
+- PD Controller Simulator for Quadrotor Dynamics
+- A* Infinite Graph Path Planning Algorithm Implmentation
+- Controller and A* Integration
 
-## TODO I ##
+## PD Controller Simulator for Quadrotor Dynamics ##
 TODO
 
-## TODO II ##
-
+## A* Infinite Graph Path Planning Algorithm Implmentation ##
 TODO
 
