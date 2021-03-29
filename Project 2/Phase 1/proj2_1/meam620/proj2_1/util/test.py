@@ -12,8 +12,7 @@ from scipy.spatial.transform import Rotation
 from numpy.linalg import norm
 # Test
 
-# from flightsim.numpy_encoding import NumpyJSONEncoder
-from meam620.flightsim.numpy_encoding import NumpyJSONEncoder
+from flightsim.numpy_encoding import NumpyJSONEncoder
 
 def complementary_filter_update_test(d, complementary_filter_update):
     # Run a test
