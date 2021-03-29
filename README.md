@@ -12,5 +12,8 @@ TODO
 ## A* Infinite Graph Path Planning Algorithm Implmentation ##
 TODO
 
+
+## PD Controller and A* Integration ##
+
 ## Complementary Filter for Quadrotor Attitude Estimation ##
 
