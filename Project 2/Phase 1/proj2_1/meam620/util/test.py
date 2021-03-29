@@ -9,6 +9,7 @@ from numpy.linalg import norm
 from code.complementary_filter import complementary_filter_update
 
 
+
 class TestBase(unittest.TestCase):
 
     def complementary_filter_update_test(self, fname):
