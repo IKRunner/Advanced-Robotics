@@ -6,7 +6,7 @@ import numpy as np
 from scipy.spatial.transform import Rotation
 from numpy.linalg import norm
 
-from proj2_1.code.complementary_filter import complementary_filter_update
+from code.complementary_filter import complementary_filter_update
 
 
 class TestBase(unittest.TestCase):
