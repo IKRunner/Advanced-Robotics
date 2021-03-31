@@ -34,21 +34,22 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     g = 9.81
     gain_slope = -10
 
-    # Use linear ODE model to compute time position rotation matrix and form to quaternnion
-    curr_quaternion = Rotation.from_matrix(expm(skew(angular_velocity) * dt)).as_quat()
+    # # Use linear ODE model to compute time position rotation matrix and form to quaternnion
+    # curr_quaternion = Rotation.from_matrix(expm(skew(angular_velocity) * dt)).as_quat()
+    curr_rotation = expm(skew(angular_velocity) * dt)
 
-    # real = np.cos(np.linalg.norm(angular_velocity * dt) / 2)
-    # imag = np.sin(np.linalg.norm(angular_velocity * dt) / 2) * angular_velocity
-    # curr_quaternion = np.append(imag, real)
 
     # Do quaternion multiplication to update rotation matrix
-    prev_quaternion = initial_rotation.as_quat()
-    real_estimate = prev_quaternion[-1] * curr_quaternion[-1] - prev_quaternion[0:3] @ curr_quaternion[0:3]
-    imag_estimate = prev_quaternion[-1] * curr_quaternion[0:3] + curr_quaternion[-1] * prev_quaternion[0:3] \
-                    + skew(prev_quaternion[0:3]) @ curr_quaternion[0:3]
-    quat_estimate = np.append(imag_estimate, real_estimate)
-    rot_estimate = Rotation.from_quat([quat_estimate[0], quat_estimate[1], quat_estimate[2],
-                                       quat_estimate[3]]).as_matrix()
+    # prev_quaternion = initial_rotation.as_quat()
+    prev_rotation = initial_rotation.as_matrix()
+    # real_estimate = prev_quaternion[-1] * curr_quaternion[-1] - prev_quaternion[0:3] @ curr_quaternion[0:3]
+    # imag_estimate = prev_quaternion[-1] * curr_quaternion[0:3] + curr_quaternion[-1] * prev_quaternion[0:3] \
+    #                 + skew(prev_quaternion[0:3]) @ curr_quaternion[0:3]
+    # quat_estimate = np.append(imag_estimate, real_estimate)
+    # rot_estimate = Rotation.from_quat([quat_estimate[0], quat_estimate[1], quat_estimate[2],
+    #                                    quat_estimate[3]]).as_matrix()
+
+    rot_estimate = prev_rotation * curr_rotation
 
     # Compute g_prime and normalize
     g_prime = rot_estimate @ linear_acceleration
@@ -80,7 +81,6 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     # Perform correction
     rot_correction = Rotation.from_quat([quat_correct_prime[0], quat_correct_prime[1],
                                          quat_correct_prime[2], quat_correct_prime[3]]).as_matrix()
-    rot_correction * rot_estimate
 
 
 
@@ -102,7 +102,7 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     # Initial output
     # Rotation.identity()
 
-    return Rotation.from_matrix(rot_correction * rot_estimate)
+    return Rotation.from_matrix( rot_correction * rot_estimate)
 
 # rot_estimate = (quat_estimate[0] ** 2 - quat_estimate[1:] @ quat_estimate[1:]) * Rotation.identity().as_matrix() + \
 #                2 * quat_estimate[0] * skew(quat_estimate[1:]) +  2 * quat_estimate[1:][:, None] @ quat_estimate[1:][None, :]
