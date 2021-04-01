@@ -53,7 +53,7 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
 
     rot_estimate = initial_rotation * curr_rotation
 
-    # Compute g_prime and normalize
+    # Compute g_prime and normalize to g
     g_prime = rot_estimate.as_matrix() @ linear_acceleration
     g_prime = g_prime / np.linalg.norm(g_prime)
 
