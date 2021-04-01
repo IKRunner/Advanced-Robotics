@@ -74,6 +74,8 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     else:
         alpha = gain_slope * error_measured + 2
 
+    # print(alpha)
+
     # Construct blended quaternion correction and normalize
     null_rotation = np.array([0, 0, 0, 1])
     quat_correct_prime = (1 - alpha) * null_rotation + (alpha) * quat_correct
