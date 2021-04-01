@@ -81,9 +81,8 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     # Perform correction
     rot_correction = Rotation.from_quat([quat_correct_prime[0], quat_correct_prime[1],
                                          quat_correct_prime[2], quat_correct_prime[3]]).as_matrix()
-
-
-
+    n=9
+    board = [[None for _ in range(n)] for _ in range(n)]
 
      # Do quaternion multiplication to update rotation matrix
 
