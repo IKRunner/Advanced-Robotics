@@ -20,14 +20,11 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     """
 
     # TODO Your code here - replace the return value with one you compute
-
     '''
-    >>> Construct quaternion multiply together to obtain estimate
-    >>> Using measured acceleration vector compute erroor meeasure by looking at magnnitude of accelration vectoor,
-    >>> compare to 1 or 9.8
-    >>> Compute gain alpha based on output. If nonn-zero, compute correction matrix
+    >>> Use Euler's Theorem to obtain rootation estimate
+    >>> Using normalized acceleration vector compute error measure 
+    >>> Compute gain alpha based on output and compute blended quaternionn as function of alpha
     >>> Apply rotation corection using gain alpha
-    
     '''
 
     # Accelaration due to gravity and alpha slope
@@ -40,8 +37,8 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     # Do Rotation compoisition to obtain current rotation estimate
     rot_estimate = initial_rotation * curr_rotation
 
-    # Computer error magnitude of acceleration vector
-    error_measured = np.abs(np.linalg.norm(linear_acceleration) - g)
+    # Compute error magnitude of g-normalized acceleration vector
+    error_measured = np.abs(np.linalg.norm(linear_acceleration / g) - 1)
     # print(error_measured)
 
     # Compute g_prime and normalize to g
@@ -53,11 +50,6 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     imag_correct = np.array([0, (g_prime[2]) / (1 * np.sqrt(2 * (1 + g_prime[0]))),
                              (-g_prime[1]) / (1 * np.sqrt(2 * (1 + g_prime[0])))])
     quat_correct = np.append(imag_correct, real_corect)
-
-    # real_corect = np.sqrt((1 + (g * g_prime[0]))/ (2))
-    # imag_correct = np.array([0, (g_prime[2])/(g * np.sqrt(2 * (1 + (g * g_prime[0])))),
-    #                          (-g_prime[1])/(g * np.sqrt(2 * (1 + (g * g_prime[0]))))])
-    # quat_correct = np.append(imag_correct, real_corect)
 
     # Compute alpha
     if error_measured >= 0.2:
@@ -75,7 +67,6 @@ def complementary_filter_update(initial_rotation, angular_velocity, linear_accel
     # Perform correction
     rot_correction = Rotation.from_quat([quat_correct_prime[0], quat_correct_prime[1],
                                          quat_correct_prime[2], quat_correct_prime[3]])
-
     return rot_correction * rot_estimate
 
 def skew(v):
