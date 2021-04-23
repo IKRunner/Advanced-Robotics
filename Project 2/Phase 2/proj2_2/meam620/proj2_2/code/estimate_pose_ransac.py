@@ -31,7 +31,7 @@ def solve_w_t(uvd1, uvd2, R0):
     solve_w_t core routine used to compute best fit w and t given a set of stereo correspondences
 
     :param uvd1: 3xn ndarray : normailzed stereo results from frame 1
-    :param uvd2: 3xn ndarray : normailzed stereo results from frame 1
+    :param uvd2: 3xn ndarray : normailzed stereo results from frame 2
     :param R0: Rotation type - base rotation estimate
     :return: w, t : 3x1 ndarray estimate for rotation vector, 3x1 ndarray estimate for translation
     """
