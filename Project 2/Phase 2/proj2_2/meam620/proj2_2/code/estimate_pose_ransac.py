@@ -35,20 +35,6 @@ def solve_w_t(uvd1, uvd2, R0):
     :param R0: Rotation type - base rotation estimate
     :return: w, t : 3x1 ndarray estimate for rotation vector, 3x1 ndarray estimate for translation
     """
-    '''
-    # initialize inliers to all false
-    best_inliers = np.zeros(n, dtype=bool)
-    n = uvd1.shape[1]
-    If ransanc_iterations < 1:
-
-
-    A -> 2n * 6
-    B -> 2n * 1
-    Y = R.as_matrix() @ np.vstack((uvd2[0:2, :], np.ones((1, n))))
-    Y1 = Y[0, :]
-
-
-    '''
 
     # TODO Your code here replace the dummy return value with a value you compute
     # Generate y matrix
@@ -77,7 +63,7 @@ def solve_w_t(uvd1, uvd2, R0):
     x, _, _, _ = np.linalg.lstsq(A,b, rcond=-1)
     assert x.shape[0] == 6 and x.shape[1] == 1
 
-    # Extract rotation and translation
+    # Extract rotation and translation vectors
     w = x[0:3]
     t = x[3:6]
     return w, t
@@ -97,11 +83,30 @@ def find_inliers(w, t, uvd1, uvd2, R0, threshold):
     :return: ndarray with n boolean entries : Only True for correspondences that pass the test
     """
 
-
-    n = uvd1.shape[1]
-
     # TODO Your code here replace the dummy return value with a value you compute
-    return np.zeros(n, dtype='bool')
+    n = uvd1.shape[1]
+    # Initialize all inliers to false
+    inliers = np.zeros((n, ), dtype='bool')
+
+    # Loop through all correspondences
+    for i in range(n):
+        u1_prime = uvd1[0, i]
+        v1_prime = uvd1[1, i]
+        u2_prime = uvd2[0, i]
+        v2_prime = uvd2[1, i]
+        d2_prime = uvd2[2, i]
+        k = np.hstack((np.eye(2, 2), np.array([[-u1_prime], [-v1_prime]])))
+        rot = (np.eye(3,3) + skew(w)) @ R0.as_matrix()
+        u1 = np.array([[u2_prime], [v2_prime], [1]])
+        tran = d2_prime * t[...,None]
+
+        # Generate discrepancy vector
+        delta = k @ (((rot) @ (u1)) + (tran))
+        assert delta.shape[0] == 2 and delta.shape[1] == 1
+
+        # Preserve all inliers
+        inliers[i] = np.linalg.norm(delta) < threshold
+    return inliers
 
 
 def ransac_pose(uvd1, uvd2, R0, ransac_iterations, ransac_threshold):
@@ -118,9 +123,35 @@ def ransac_pose(uvd1, uvd2, R0, ransac_iterations, ransac_threshold):
     :return: ndarray with n boolean entries : Only True for correspondences that are inliers
 
     """
+    '''
+     # initialize inliers to all false
+     best_inliers = np.zeros(n, dtype=bool)
+     n = uvd1.shape[1]
+     If ransanc_iterations < 1:
+
+     '''
+    # TODO Your code here replace the dummy return value with a value you compute
     n = uvd1.shape[1]
 
 
-    # TODO Your code here replace the dummy return value with a value you compute
-    w = t = np.zeros((3,1))
+
+
+    w = np.zeros((3,1))
+    t = np.zeros((3,1))
     return w, t, np.zeros(n, dtype='bool')
+
+
+def skew(v):
+    """
+        This function computes the skew symmetric representation of a (3, ) vector
+
+        Parameters:
+            v,    (3, ) numpy array represennting i,j,k counterpart of quaternion
+
+        Return: 3x3 numpy array
+
+    """
+
+    return np.array([[0, -v[2], v[1]],
+                     [v[2], 0, -v[0]],
+                     [-v[1], v[0], 0]])

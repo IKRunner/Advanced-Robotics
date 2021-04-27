@@ -1,25 +1,25 @@
 {
     "computed_inliers": [
+        true,
+        true,
         false,
         false,
+        true,
         false,
         false,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
+        true,
         false,
         false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false,
-        false
+        true,
+        true,
+        true,
+        true
     ],
     "true_inliers": [
         true,
@@ -43,6 +43,6 @@
         true,
         true
     ],
-    "passed": false,
+    "passed": true,
     "test_type": "find_inliers"
 }
