@@ -147,19 +147,20 @@ def ransac_pose(uvd1, uvd2, R0, ransac_iterations, ransac_threshold):
         uvd2_subsets = uvd2[:, subsets]
 
         # Generate proposed w and t vector solutions using random subsets
-        w, t = solve_w_t(uvd1_subsets, uvd2_subsets, R0)
-        proposed_soln[0:3, k] = np.squeeze(w)
-        proposed_soln[3:6, k] = np.squeeze(t)
+        w_proposed, t_proposed = solve_w_t(uvd1_subsets, uvd2_subsets, R0)
+        proposed_soln[0:3, k] = np.squeeze(w_proposed)
+        proposed_soln[3:6, k] = np.squeeze(t_proposed)
 
         # Find inliers for proposed vector solutions
-        proposed_inliers[:, k] = find_inliers(np.squeeze(w), np.squeeze(t), uvd1, uvd2, R0, ransac_threshold)
+        proposed_inliers[:, k] = find_inliers(proposed_soln[0:3, k], proposed_soln[3:6, k], uvd1, uvd2, R0, ransac_threshold)
 
     # Column of largest number of inliers and corresponding weights
     max_inlier = np.argmax(np.sum(proposed_inliers, axis=0))
     w = proposed_soln[0:3, max_inlier][...,None]
     t = proposed_soln[3:6, max_inlier][...,None]
+    inliers = proposed_inliers[:, max_inlier]
 
-    return w, t, proposed_inliers[:, max_inlier]
+    return w, t, inliers
 
 
 def skew(v):
