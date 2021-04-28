@@ -132,13 +132,37 @@ def ransac_pose(uvd1, uvd2, R0, ransac_iterations, ransac_threshold):
      '''
     # TODO Your code here replace the dummy return value with a value you compute
     n = uvd1.shape[1]
+    proposed_soln = np.zeros((6, ransac_iterations))
+    proposed_inliers = np.zeros((n, ransac_iterations), dtype='bool')
 
+    # All correspondences are inliers for zero iterations
+    if ransac_iterations < 1:
+        w, t = solve_w_t(uvd1, uvd2, R0)
+        return w, t, np.ones((n, ), dtype='bool')
 
+    # Cycle through all k iterations
+    for k in range(ransac_iterations):
+        # Select three random subsets of correspondences w/o replacement
+        subsets = np.random.choice(n, 3)
 
+        # Index into stereo measurements using random subsets
+        uvd1_subsets = uvd1[:, subsets]
+        uvd2_subsets = uvd2[:, subsets]
 
-    w = np.zeros((3,1))
-    t = np.zeros((3,1))
-    return w, t, np.zeros(n, dtype='bool')
+        # Generate proposed w and t vector solutions using random subsets
+        w, t = solve_w_t(uvd1_subsets, uvd2_subsets, R0)
+        proposed_soln[0:3, k] = np.squeeze(w)
+        proposed_soln[3:6, k] = np.squeeze(t)
+
+        # Find inliers for proposed vector solutions
+        proposed_inliers[:, k] = find_inliers(np.squeeze(w), np.squeeze(t), uvd1, uvd2, R0, ransac_threshold)
+
+    # Column of largest number of inliers and corresponding weights
+    max_inlier = np.argmax(np.sum(proposed_inliers, axis=0))
+    w = proposed_soln[0:3, max_inlier][...,None]
+    t = proposed_soln[3:6, max_inlier][...,None]
+
+    return w, t, proposed_inliers[:, max_inlier]
 
 
 def skew(v):

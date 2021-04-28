@@ -87,6 +87,7 @@ plt.plot(translation[:, 2], label='Tz')
 plt.ylabel('meters')
 plt.title('Position of Quad')
 plt.legend()
+fig.savefig('../data_out/position_attitude.png')
 
 plt.show()
 
@@ -96,5 +97,6 @@ plt.plot(inlier_count, label='inliers')
 plt.plot(outlier_count, label='outliers')
 plt.title('Inlier and outlier count')
 plt.legend()
+fig.savefig('../data_out/inlier_outlier.png')
 
 plt.show()
