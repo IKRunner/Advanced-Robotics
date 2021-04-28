@@ -23,7 +23,7 @@ focal_length = dataset.rectified_camera_matrix[0,0]
 
 pose_iterations = 3
 ransac_threshold = 3/focal_length
-ransac_iterations = 10
+ransac_iterations = 0
 
 R = Rotation.identity()
 T = np.zeros((3, 1))
@@ -87,16 +87,22 @@ plt.plot(translation[:, 2], label='Tz')
 plt.ylabel('meters')
 plt.title('Position of Quad')
 plt.legend()
-fig.savefig('../data_out/position_attitude.png')
+if ransac_iterations == 0:
+    fig.savefig('../data_out/position_attitude_iter_0.png')
 
+if ransac_iterations != 0:
+    fig.savefig('../data_out/position_attitude.png')
 plt.show()
 
-fig = plt.figure()
 
+fig = plt.figure()
 plt.plot(inlier_count, label='inliers')
 plt.plot(outlier_count, label='outliers')
 plt.title('Inlier and outlier count')
 plt.legend()
-fig.savefig('../data_out/inlier_outlier.png')
+if ransac_iterations == 0:
+    fig.savefig('../data_out/inlier_outlier_iter_0.png')
 
+if ransac_iterations != 0:
+    fig.savefig('../data_out/inlier_outlier.png')
 plt.show()
