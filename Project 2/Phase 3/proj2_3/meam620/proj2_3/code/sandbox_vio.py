@@ -183,6 +183,7 @@ for (i, p) in enumerate(pose):
 
 plt.plot(trace_covariance)
 plt.title('Trace of covariance matrix')
+plt.savefig('../data_out/output_trace_cov_matrix.png')
 plt.show()
 
 # %% Plot results
@@ -203,6 +204,7 @@ plt.plot(translation[:, 1], label='Ty')
 plt.plot(translation[:, 2], label='Tz')
 plt.ylabel('meters')
 plt.title('Position of Quad')
+fig.savefig('../data_out/output_pose_quad.png')
 plt.legend()
 
 plt.show()
@@ -215,6 +217,7 @@ plt.plot(velocity[:, 1], label='vy')
 plt.plot(velocity[:, 2], label='vz')
 plt.ylabel('meters per second')
 plt.title('Velocity of Quad')
+fig.savefig('../data_out/output_velocity_quad.png')
 plt.legend()
 plt.show()
 
@@ -225,5 +228,6 @@ plt.plot(a_bias[:, 1], label='ay')
 plt.plot(a_bias[:, 2], label='az')
 plt.ylabel('meters per second squared')
 plt.title('Accelerometer Bias')
+fig.savefig('../data_out/output_accelerometer_bias.png')
 plt.legend()
 plt.show()

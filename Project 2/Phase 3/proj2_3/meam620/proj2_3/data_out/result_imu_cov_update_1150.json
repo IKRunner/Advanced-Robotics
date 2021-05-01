@@ -1,0 +1,7 @@
+{
+    "cov_err": 4.242620384717228,
+    "cov_err_tol": 1e-05,
+    "cov_passed": false,
+    "passed": false,
+    "test_type": "error_covariance_update"
+}
