@@ -4,6 +4,7 @@ import numpy as np
 from numpy.linalg import inv
 from numpy.linalg import norm
 from scipy.spatial.transform import Rotation
+from scipy.linalg import expm
 
 
 #%% Functions
@@ -22,10 +23,10 @@ def nominal_state_update(nominal_state, w_m, a_m, dt):
     # Unpack nominal_state tuple
     p, v, q, a_b, w_b, g = nominal_state
 
-    # YOUR CODE HERE
-    new_p = np.zeros((3, 1))
-    new_v = np.zeros((3, 1))
-    new_q = Rotation.identity()
+    # Compute nominal updates
+    new_p = p + (v * dt) + 0.5 * ((q.as_matrix() @ (a_m - a_b)) + g) * (dt ** 2)
+    new_v = v + ((q.as_matrix() @ (a_m - a_b)) + g) * dt
+    new_q = q * Rotation.from_matrix(expm(skew(np.squeeze(w_m - w_b)) * dt))
 
     return new_p, new_v, new_q, a_b, w_b, g
 
@@ -52,10 +53,39 @@ def error_covariance_update(nominal_state, error_state_covariance, w_m, a_m, dt,
     # Unpack nominal_state tuple
     p, v, q, a_b, w_b, g = nominal_state
 
-    # YOUR CODE HERE
+    # Compute noise terms
+    Fi = np.zeros((18, 12))
+    rows = np.arange(3, 15)
+    cols = np.arange(0, 12)
+    Fi[rows, cols] = 1
 
-    # return an 18x18 covariance matrix
-    return np.identity(18)
+    Qi = np.zeros((12, 12))
+    Vi = (accelerometer_noise_density ** 2) * (dt ** 2) * np.eye(3)
+    Theta_i = (gyroscope_noise_density ** 2) * (dt ** 2) * np.eye(3)
+    Ai = (accelerometer_random_walk ** 2) * dt * np.eye(3)
+    Omega_i = (gyroscope_random_walk ** 2) * dt * np.eye(3)
+    Qi[0:3, 0:3] = Vi
+    Qi[3:6, 3:6] = Theta_i
+    Qi[6:9, 6:9] = Ai
+    Qi[9:12, 9:12] = Omega_i
+    noise = Fi @ Qi @ Fi.T
+
+    # Update covariance matrix
+    Fx = np.zeros((18, 18))
+    Fx[0:3, 0:3] = np.eye(3)
+    Fx[0:3, 3:6] = np.eye(3) * dt
+    Fx[3:6, 3:6] = np.eye(3)
+    Fx[3:6, 6:9] = -q.as_matrix() @ skew(np.squeeze(a_m - a_b)) * dt
+    Fx[3:6, 9:12] = -q.as_matrix() * dt
+    Fx[3:6, 15:18] = np.eye(3) * dt
+    Fx[6:9, 6:9] = (Rotation.from_rotvec(np.squeeze(w_m - w_b) * dt).as_matrix()).T
+    Fx[6:9, 12:15] = -np.eye(3) * dt
+    Fx[9:12, 9:12] = np.eye(3)
+    Fx[12:15, 12:15] = np.eye(3)
+    Fx[15:18, 15:18] = np.eye(3)
+
+    # Return updated 18x18 covariance matrix with noise term added
+    return Fx @ error_state_covariance @ Fx.T + noise
 
 
 def measurement_update_step(nominal_state, error_state_covariance, uv, Pw, error_threshold, Q):
@@ -79,3 +109,18 @@ def measurement_update_step(nominal_state, error_state_covariance, uv, Pw, error
     # YOUR CODE HERE - compute the innovation next state, next error_state covariance
     innovation = np.zeros((2, 1))
     return (p, v, q, a_b, w_b, g), error_state_covariance, innovation
+
+def skew(v):
+    """
+        This function computes the skew symmetric representation of a (3, ) vector
+
+        Parameters:
+            v,    (3, ) numpy array represennting i,j,k counterpart of quaternion
+
+        Return: 3x3 numpy array
+
+    """
+
+    return np.array([[0, -v[2], v[1]],
+                     [v[2], 0, -v[0]],
+                     [-v[1], v[0], 0]])

@@ -26,6 +26,7 @@ def estimate_pose(uvd1, uvd2, pose_iterations, ransac_iterations, ransac_thresho
 
     return R, t, inliers
 
+
 def solve_w_t(uvd1, uvd2, R0):
     """
     solve_w_t core routine used to compute best fit w and t given a set of stereo correspondences
@@ -49,16 +50,16 @@ def solve_w_t(uvd1, uvd2, R0):
         u1_prime = uvd1[0, i]
         v1_prime = uvd1[1, i]
         d2_prime = uvd2[2, i]
-        k = np.hstack((np.eye(2,2), np.array([[-u1_prime], [-v1_prime]])))
-        b[2*i:(2*i)+2, :] = -k @ Y[:, i][...,None]
+        k = np.hstack((np.eye(2, 2), np.array([[-u1_prime], [-v1_prime]])))
+        b[2 * i:(2 * i) + 2, :] = -k @ Y[:, i][..., None]
 
         # Generate A matrix
-        A[2*i:(2*i)+2, :] = k @ np.array([[0, Y[2, i], -Y[1, i], d2_prime, 0, 0],
-                                  [-Y[2, i], 0, Y[0, i], 0, d2_prime, 0],
-                                  [Y[1, i], -Y[0, i], 0, 0, 0, d2_prime]])
+        A[2 * i:(2 * i) + 2, :] = k @ np.array([[0, Y[2, i], -Y[1, i], d2_prime, 0, 0],
+                                                [-Y[2, i], 0, Y[0, i], 0, d2_prime, 0],
+                                                [Y[1, i], -Y[0, i], 0, 0, 0, d2_prime]])
 
     # Solve system
-    x, _, _, _ = np.linalg.lstsq(A,b, rcond=-1)
+    x, _, _, _ = np.linalg.lstsq(A, b, rcond=-1)
 
     # Extract rotation and translation vectors
     w = x[0:3]
@@ -83,7 +84,7 @@ def find_inliers(w, t, uvd1, uvd2, R0, threshold):
     # TODO Your code here replace the dummy return value with a value you compute
     n = uvd1.shape[1]
     # Initialize all inliers to false
-    inliers = np.zeros((n, ), dtype='bool')
+    inliers = np.zeros((n,), dtype='bool')
 
     # Loop through all correspondences
     for i in range(n):
@@ -93,9 +94,9 @@ def find_inliers(w, t, uvd1, uvd2, R0, threshold):
         v2_prime = uvd2[1, i]
         d2_prime = uvd2[2, i]
         k = np.hstack((np.eye(2, 2), np.array([[-u1_prime], [-v1_prime]])))
-        rot = (np.eye(3,3) + skew(w)) @ R0.as_matrix()
+        rot = (np.eye(3, 3) + skew(w)) @ R0.as_matrix()
         u1 = np.array([[u2_prime], [v2_prime], [1]])
-        tran = d2_prime * t[...,None]
+        tran = d2_prime * t[..., None]
 
         # Generate discrepancy vector
         delta = k @ (((rot) @ (u1)) + (tran))
@@ -135,7 +136,7 @@ def ransac_pose(uvd1, uvd2, R0, ransac_iterations, ransac_threshold):
     # All correspondences are inliers for zero iterations
     if ransac_iterations < 1:
         w, t = solve_w_t(uvd1, uvd2, R0)
-        return w, t, np.ones((n, ), dtype='bool')
+        return w, t, np.ones((n,), dtype='bool')
 
     # Cycle through all k iterations
     for k in range(ransac_iterations):
@@ -152,12 +153,13 @@ def ransac_pose(uvd1, uvd2, R0, ransac_iterations, ransac_threshold):
         proposed_soln[3:6, k] = np.squeeze(t_proposed)
 
         # Find inliers for proposed vector solutions
-        proposed_inliers[:, k] = find_inliers(proposed_soln[0:3, k], proposed_soln[3:6, k], uvd1, uvd2, R0, ransac_threshold)
+        proposed_inliers[:, k] = find_inliers(proposed_soln[0:3, k], proposed_soln[3:6, k], uvd1, uvd2, R0,
+                                              ransac_threshold)
 
     # Column of largest number of inliers and corresponding weights
     max_inlier = np.argmax(np.sum(proposed_inliers, axis=0))
-    w = proposed_soln[0:3, max_inlier][...,None]
-    t = proposed_soln[3:6, max_inlier][...,None]
+    w = proposed_soln[0:3, max_inlier][..., None]
+    t = proposed_soln[3:6, max_inlier][..., None]
     inliers = proposed_inliers[:, max_inlier]
 
     return w, t, inliers

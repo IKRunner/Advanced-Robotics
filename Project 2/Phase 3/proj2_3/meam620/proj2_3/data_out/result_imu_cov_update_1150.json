@@ -1,7 +1,7 @@
 {
-    "cov_err": 4.242620384717228,
+    "cov_err": 1.4297292263516721e-21,
     "cov_err_tol": 1e-05,
-    "cov_passed": false,
-    "passed": false,
+    "cov_passed": true,
+    "passed": true,
     "test_type": "error_covariance_update"
 }

@@ -1,13 +1,13 @@
 {
-    "p_err": 0.3103672749418797,
+    "p_err": 4.336808689942018e-19,
     "p_err_tol": 1e-05,
-    "p_passed": false,
-    "v_err": 0.16084625730639412,
+    "p_passed": true,
+    "v_err": 9.277381592597427e-16,
     "v_err_tol": 1e-05,
-    "v_passed": false,
-    "q_err": 0.28853108458309507,
+    "v_passed": true,
+    "q_err": 3.903127820947816e-18,
     "q_err_tol": 0.0001,
-    "q_passed": false,
+    "q_passed": true,
     "a_b_err": 0.0,
     "a_b_err_tol": 1e-05,
     "a_b_passed": true,
@@ -17,6 +17,6 @@
     "g_err": 0.0,
     "g_err_tol": 1e-05,
     "g_passed": true,
-    "passed": false,
+    "passed": true,
     "test_type": "nominal_state_update"
 }
