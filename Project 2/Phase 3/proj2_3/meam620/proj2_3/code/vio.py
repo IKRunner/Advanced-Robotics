@@ -119,9 +119,7 @@ def measurement_update_step(nominal_state, error_state_covariance, uv, Pw, error
 
     # Compute Jacobian
     Ht = np.zeros((2, 18))
-    u = uv[0, 0]
-    v = uv[1, 0]
-    del_zt_pc = (1 / Zc) * np.array([[1, 0, -u], [0, 1, -v]])
+    del_zt_pc = (1 / Zc) * np.array([[1, 0, -Xc / Zc], [0, 1, -Yc / Zc]])
     Ht[:, 0:3] = del_zt_pc @ -q.as_matrix().T
     Ht[:, 6:9] = del_zt_pc @ skew(np.squeeze(Pc))
 
