@@ -138,7 +138,6 @@ def measurement_update_step(nominal_state, error_state_covariance, uv, Pw, error
     # Update error state covariance matrix
     error_state_covariance = (np.eye(18) - Kt @ Ht) @ error_state_covariance @ (np.eye(18) - Kt @ Ht).T + (Kt @ Q @ Kt.T)
 
-
     return (p, v, q, a_b, w_b, g), error_state_covariance, innovation
 
 def skew(v):

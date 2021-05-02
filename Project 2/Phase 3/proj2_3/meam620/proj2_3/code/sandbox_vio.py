@@ -99,7 +99,8 @@ while True:
         break
 
     trace_covariance.append(error_state_covariance.trace())
-    pose.append((nominal_state[2], nominal_state[0], nominal_state[1], nominal_state[3].copy()))
+    pose.append((nominal_state[2], nominal_state[0], nominal_state[1], nominal_state[3].copy(), nominal_state[4],
+                 nominal_state[5]))
 
     # Extract prevailing a_m and w_m - transform to left camera frame
     w_m = R_LB @ angular_velocity[imu_index - 1, :].reshape(3, 1)
@@ -172,12 +173,16 @@ euler = np.zeros((n, 3))
 translation = np.zeros((n, 3))
 velocity = np.zeros((n, 3))
 a_bias = np.zeros((n, 3))
+gyro_bias = np.zeros((n, 3))
+grav = np.zeros((n, 3))
 
 for (i, p) in enumerate(pose):
     euler[i] = p[0].as_euler('XYZ', degrees=True)
     translation[i] = p[1].ravel()
     velocity[i] = p[2].ravel()
     a_bias[i] = p[3].ravel()
+    gyro_bias[i] = p[4].ravel()
+    grav[i] = p[5].ravel()
 
 # %% Plot trace of covariance matrix
 
@@ -189,7 +194,6 @@ plt.show()
 # %% Plot results
 
 fig = plt.figure()
-
 plt.subplot(121)
 plt.plot(euler[:, 0], label='yaw')
 plt.plot(euler[:, 1], label='pitch')
@@ -206,7 +210,6 @@ plt.ylabel('meters')
 plt.title('Position of Quad')
 fig.savefig('../data_out/output_pose_quad.png')
 plt.legend()
-
 plt.show()
 
 #%%
@@ -229,5 +232,27 @@ plt.plot(a_bias[:, 2], label='az')
 plt.ylabel('meters per second squared')
 plt.title('Accelerometer Bias')
 plt.savefig('../data_out/output_accelerometer_bias.png')
+plt.legend()
+plt.show()
+
+#%%
+plt.figure()
+plt.plot(gyro_bias[:, 0], label='wx')
+plt.plot(gyro_bias[:, 1], label='wy')
+plt.plot(gyro_bias[:, 2], label='wz')
+plt.ylabel('Angular velocity')
+plt.title('Gyrometer Bias')
+plt.savefig('../data_out/output_gyrometer_bias.png')
+plt.legend()
+plt.show()
+
+#%%
+plt.figure()
+plt.plot(grav[:, 0], label='gx')
+plt.plot(grav[:, 1], label='gy')
+plt.plot(grav[:, 2], label='gz')
+plt.ylabel('meters per second squared')
+plt.title('Gravity')
+plt.savefig('../data_out/output_gravity.png')
 plt.legend()
 plt.show()
